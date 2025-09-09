@@ -59,15 +59,21 @@ const ExperienceSection = () => {
                 <h3 className="experience__position">
                   {experiences[displayedTab].position}
                   <span className="experience__at"> @ </span>
-                  <a 
-                    href={experiences[displayedTab].website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="experience__company"
-                  >
-                    {experiences[displayedTab].company}
-                    <ExternalLink size={16} className="experience__external-icon" />
-                  </a>
+                  {experiences[displayedTab].website ? (
+                    <a
+                      href={experiences[displayedTab].website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="experience__company"
+                    >
+                      {experiences[displayedTab].company}
+                      <ExternalLink size={16} className="experience__external-icon" />
+                    </a>
+                  ) : (
+                    <span className="experience__company">
+                      {experiences[displayedTab].company}
+                    </span>
+                  )}
                 </h3>
                 
                 <div className="experience__meta">
