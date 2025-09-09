@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 export const useScrolled = (threshold = 50) => {
   const [scrolled, setScrolled] = useState(false);
@@ -19,26 +19,31 @@ export const useScrolled = (threshold = 50) => {
 };
 
 export const useScrollDirection = () => {
-  const [scrollDirection, setScrollDirection] = useState('up');
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [direction, setDirection] = useState('up');
+  const lastScrollY = useRef(0);
+  const scrollDirection = useRef('up');
+
+  const updateScrollDirection = useCallback(() => {
+    const scrollY = window.pageYOffset;
+    const dir = scrollY > lastScrollY.current ? 'down' : 'up';
+
+    if (
+      dir !== scrollDirection.current &&
+      (scrollY - lastScrollY.current > 10 || scrollY - lastScrollY.current < -10)
+    ) {
+      scrollDirection.current = dir;
+      setDirection(dir);
+    }
+
+    lastScrollY.current = scrollY > 0 ? scrollY : 0;
+  }, []);
 
   useEffect(() => {
-    const updateScrollDirection = () => {
-      const scrollY = window.pageYOffset;
-      const direction = scrollY > lastScrollY ? 'down' : 'up';
-      
-      if (direction !== scrollDirection && (scrollY - lastScrollY > 10 || scrollY - lastScrollY < -10)) {
-        setScrollDirection(direction);
-      }
-      
-      setLastScrollY(scrollY > 0 ? scrollY : 0);
-    };
-
     window.addEventListener('scroll', updateScrollDirection);
     return () => window.removeEventListener('scroll', updateScrollDirection);
-  }, [scrollDirection, lastScrollY]);
+  }, []);
 
-  return scrollDirection;
+  return direction;
 };
 
 export const useIntersectionObserver = (options = {}) => {
